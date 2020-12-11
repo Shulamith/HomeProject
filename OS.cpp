@@ -3,7 +3,7 @@
 OS::OS(long long memSize, int hardDisks) {
   ram_mem.setMemorySize(memSize);
   hard_disks = hardDisks;
-  //disk_control = disk(hardDisks);
+  disk_control.setup(hardDisks);
 }
 void OS::increasePID() { p_id_counter++; }
 void OS::setCPU() {
@@ -39,7 +39,6 @@ void OS::addProcess(int prioritySize, long long memoryNeeded) {
   if (!cpu_in_use) {
     p.running = true;
     process_in_cpu = p_id_counter;
-    std::cout << "Process is currently running" << '\n';
     setCPU();
   } else {
     rq.addProcess(p);
@@ -64,7 +63,6 @@ void OS::parse(std::vector<std::string> unparsed) {
       std::cout << "Unrecognizable input" << '\n';
       return;
     }
-    std::cout << "Add Process" << '\n';
     addProcess(stoi(unparsed[1]), stoll(unparsed[2]));
   } else if (unparsed[0] == "t") {
     terminate();
@@ -76,11 +74,24 @@ void OS::parse(std::vector<std::string> unparsed) {
     } else if (unparsed[1] == "m") {
       std::cout << "Show memory" << '\n';
     } else if (unparsed[1] == "i") {
-      std::cout << "Show hardDisks" << '\n';
+      disk_control.diskPrint();
     } else {
       std::cout << "Unrecognizable Input" << '\n';
     }
-  } else {
+  }
+  else if (unparsed[0]=="D" && unparsed.size()==2) {
+    disk_control.finishReading(stoi(unparsed[1]));
+  }
+  else if (unparsed[0]=="d" && unparsed.size()>2) {
+    if(cpu_in_use){
+    int diskNumber = stoi(unparsed[1]);
+
+    for(int i=2; i<unparsed.size(); i++){
+      disk_control.addCylinder(diskNumber,process_in_cpu,stoi(unparsed[i]));
+    }
+  }
+  }else {
     std::cout << "Unrecognizable Input" << '\n';
   }
+
 }

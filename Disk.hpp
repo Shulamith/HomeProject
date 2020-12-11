@@ -9,7 +9,8 @@ private:
   int num_disks;
   std::vector<std::queue<std::pair<int,int>>> disk_queue;
 public:
-  disk (int numOfDisks);
+  disk ();
+  void setup(int hardDisks);
   void finishReading(int diskNumber);
   void addCylinder(int diskNumber, int pID, int cylinder);
   void diskPrint();

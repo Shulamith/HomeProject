@@ -37,6 +37,5 @@ public:
   }
   void addProcess(Process &p){
     processes.push(std::make_pair(p.priority, p.getpID()));
-    std::cout << "Front of queue" << processes.top().second << '\n';
   }
 };
