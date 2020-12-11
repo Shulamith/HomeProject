@@ -12,10 +12,20 @@ void OS::setCPU() {
     cpu_in_use = true;
   }
 }
+void OS::sendProcesstoCPU(){
+  if(!rq.checkEmpty()){
+    int pID = rq.getNextInLine();
+    //setCPU();
+    cpu_in_use = true;
+    process_in_cpu = pID;
+    pcb[pID] = true;
+  }
+}
 void OS::terminate() {
-  setCPU();
-  // removefromPCB
-  //ifReadyQueueNotEmpty,call sendProcesstoCPU func and setCPU() and add process to removefromPCB
+  cpu_in_use = false;
+  //remove process from pcb
+  pcb.erase(process_in_cpu);
+  sendProcesstoCPU();
   //else
 }
 void OS::addProcess(int prioritySize, int memoryNeeded) {
@@ -23,12 +33,15 @@ void OS::addProcess(int prioritySize, int memoryNeeded) {
   Process p = Process(prioritySize, p_id_counter);
   if (!cpu_in_use) {
     p.running = true;
+    process_in_cpu = p_id_counter;
     std::cout << "Process is currently running" << '\n';
     setCPU();
   } else {
       rq.addProcess(p);
   }
   // add process to PCB
+  pcb[p_id_counter] = p.running;
+  //increase processIDCounter
   increasePID();
 }
 void OS::parse(std::vector<std::string> unparsed){
@@ -36,5 +49,27 @@ void OS::parse(std::vector<std::string> unparsed){
     std::cout << "Add Process" << '\n';
     addProcess(stoi(unparsed[1]), stoi(unparsed[2]));
   }
-
+  else if(unparsed[0] == "t"){
+    terminate();
+  }
+  else if(unparsed[0] == "S"){
+    if(unparsed.size() != 2){
+      std::cout << "Unrecognizable input" << '\n';
+    }
+    else if(unparsed[1] == "r"){
+      std::cout << "Show processes" << '\n';
+    }
+    else if(unparsed[1] == "m"){
+      std::cout << "Show memory" << '\n';
+    }
+    else if (unparsed[1]== "i") {
+      std::cout << "Show hardDisks" << '\n';
+    }
+    else {
+      std::cout << "Unrecognizable Input" << '\n';
+    }
+  }
+  else{
+    std::cout << "Unrecognizable Input" << '\n';
+  }
 }

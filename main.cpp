@@ -44,14 +44,14 @@ int main(int argc, char const *argv[]) {
   std::cin >> memory;
   std::cout << "How many hard disks does the simulated computer have?" << "\n";
   std::cin >> numOfDisks;
-  std::cout << "\n";
+  //std::cout << "\n";
   long long memory2 = stoll(memory);
   OS OSModel = OS(memory2, stoi(numOfDisks));
   //Memory ramMem = Memory(4000);
   std::string input;
   std::vector<std::string> parsedResult, processTwo, processThree;
-  std::cin >> a;
-  std::cout << a << '\n';
+  //std::cin >> a;
+  //std::cout << a << '\n';
   parsedResult.push_back("A");
   parsedResult.push_back("4");
   parsedResult.push_back("1000");
@@ -66,12 +66,15 @@ int main(int argc, char const *argv[]) {
   OSModel.parse(processThree);
   //OS.addProcess(parsedResult);
   //control(parsedResult, ramMem);
-  // while (getline(std::cin, input)) {
-  //   std::cout << "input:" << input << std::endl;
-  //   parsedResult = parse(input);
-  //   std::cout << parsedResult.at(0) << '\n';
-  //   control(parsedResult);
-  // }
+
+  while (getline(std::cin, input)) {
+    std::cout << "input:" << input << "end" << std::endl;
+    if(input.size() > 0){
+        parsedResult = parse(input);
+        OSModel.parse(parsedResult);
+    }
+
+  }
   std::cout << "Main exit" << std::endl;
   return 0;
 }
