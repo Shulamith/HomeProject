@@ -10,6 +10,7 @@ private:
 public:
   Process(int priority, int pID);
   int getpID();
+  void setMemory(std::pair<int, int> memory);
   bool running = false;
   bool reading = false;
   int priority;

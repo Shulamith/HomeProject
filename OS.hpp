@@ -1,6 +1,6 @@
 //OS.cpp
 #include "./readyQueue.cpp"
-#include "ram.cpp"
+#include "./ram.hpp"
 #include "./process.hpp"
 #include <cstring>
 #include <map>
@@ -12,16 +12,17 @@ private:
   bool cpu_in_use = false;
   int hard_disks;
   int process_in_cpu;
-  Memory ram_Mem();
+  Memory ram_mem = Memory();
   std::map<int,bool> pcb;
   void increasePID();
   void setCPU();
   void terminate();
 public:
  OS (long long memSize, int hardDisks);
- void addProcess(int prioritySize, int memoryNeeded);
+ void addProcess(int prioritySize, long long memoryNeeded);
  //setRamMem();
- //setHardDisks();
+ //setHardDisks;
+ void showProcesses();
  void sendProcesstoCPU();
  void parse(std::vector<std::string> unparsed);
 };

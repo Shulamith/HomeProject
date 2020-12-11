@@ -7,3 +7,6 @@
   int Process::getpID(){
     return pID;
   }
+  void Process::setMemory(std::pair<int, int> memory){
+    this->memory = memory;
+  }

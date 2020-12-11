@@ -1,7 +1,7 @@
 #include "./OS.hpp"
 
 OS::OS(long long memSize, int hardDisks) {
-  Memory ram_Mem = Memory(memSize);
+  ram_mem.setMemorySize(memSize);
   hard_disks = hardDisks;
 }
 void OS::increasePID() { p_id_counter++; }
@@ -12,10 +12,9 @@ void OS::setCPU() {
     cpu_in_use = true;
   }
 }
-void OS::sendProcesstoCPU(){
-  if(!rq.checkEmpty()){
+void OS::sendProcesstoCPU() {
+  if (!rq.checkEmpty()) {
     int pID = rq.getNextInLine();
-    //setCPU();
     cpu_in_use = true;
     process_in_cpu = pID;
     pcb[pID] = true;
@@ -23,53 +22,64 @@ void OS::sendProcesstoCPU(){
 }
 void OS::terminate() {
   cpu_in_use = false;
-  //remove process from pcb
+  process_in_cpu = -1;
+  // removes process from pcb
   pcb.erase(process_in_cpu);
   sendProcesstoCPU();
-  //else
 }
-void OS::addProcess(int prioritySize, int memoryNeeded) {
-  // askRamMem for memory
+void OS::addProcess(int prioritySize, long long memoryNeeded) {
+  std::pair<long long, long long> memoryAddress =
+      ram_mem.getMemory(memoryNeeded);
+  // if (memoryAddress.first == -1) {
+  //   std::cout << "Not enough memory" << '\n';
+  // } else {
   Process p = Process(prioritySize, p_id_counter);
+  p.setMemory(memoryAddress);
   if (!cpu_in_use) {
     p.running = true;
     process_in_cpu = p_id_counter;
     std::cout << "Process is currently running" << '\n';
     setCPU();
   } else {
-      rq.addProcess(p);
+    rq.addProcess(p);
   }
   // add process to PCB
   pcb[p_id_counter] = p.running;
-  //increase processIDCounter
+  // increase processIDCounter
   increasePID();
+  //  }
 }
-void OS::parse(std::vector<std::string> unparsed){
+void OS::showProcesses() {
+  if (cpu_in_use == true) {
+    std::cout << "CPU: P" << process_in_cpu << '\n';
+  } else {
+    std::cout << "CPU: idle" << '\n';
+  }
+  rq.printReadyQueue();
+}
+void OS::parse(std::vector<std::string> unparsed) {
   if (unparsed[0] == "A") {
-    std::cout << "Add Process" << '\n';
-    addProcess(stoi(unparsed[1]), stoi(unparsed[2]));
-  }
-  else if(unparsed[0] == "t"){
-    terminate();
-  }
-  else if(unparsed[0] == "S"){
-    if(unparsed.size() != 2){
+    if (unparsed.size() != 3) {
       std::cout << "Unrecognizable input" << '\n';
+      return;
     }
-    else if(unparsed[1] == "r"){
-      std::cout << "Show processes" << '\n';
-    }
-    else if(unparsed[1] == "m"){
+    std::cout << "Add Process" << '\n';
+    addProcess(stoi(unparsed[1]), stoll(unparsed[2]));
+  } else if (unparsed[0] == "t") {
+    terminate();
+  } else if (unparsed[0] == "S") {
+    if (unparsed.size() != 2) {
+      std::cout << "Unrecognizable input" << '\n';
+    } else if (unparsed[1] == "r") {
+      showProcesses();
+    } else if (unparsed[1] == "m") {
       std::cout << "Show memory" << '\n';
-    }
-    else if (unparsed[1]== "i") {
+    } else if (unparsed[1] == "i") {
       std::cout << "Show hardDisks" << '\n';
-    }
-    else {
+    } else {
       std::cout << "Unrecognizable Input" << '\n';
     }
-  }
-  else{
+  } else {
     std::cout << "Unrecognizable Input" << '\n';
   }
 }
