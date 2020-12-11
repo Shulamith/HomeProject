@@ -3,6 +3,7 @@
 OS::OS(long long memSize, int hardDisks) {
   ram_mem.setMemorySize(memSize);
   hard_disks = hardDisks;
+  //disk_control = disk(hardDisks);
 }
 void OS::increasePID() { p_id_counter++; }
 void OS::setCPU() {

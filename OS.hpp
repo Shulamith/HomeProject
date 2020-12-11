@@ -2,6 +2,7 @@
 #include "./readyQueue.cpp"
 #include "./ram.hpp"
 #include "./process.hpp"
+#include "./disk.hpp"
 #include <cstring>
 #include <map>
 #pragma once
@@ -12,6 +13,7 @@ private:
   bool cpu_in_use = false;
   int hard_disks;
   int process_in_cpu;
+  disk disk_control;
   Memory ram_mem = Memory();
   std::map<int,bool> pcb;
   void increasePID();

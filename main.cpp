@@ -5,6 +5,7 @@
 #include <utility>
 #include <cstdlib>
 #include "./OS.hpp"
+#include "./disk.hpp"
 // void control(std::vector<std::string> &result, Memory &ramMem){ //ToDo: pass by reference
 //   std::cout << "here\n";
 //   bool inUse = false;
@@ -66,7 +67,10 @@ int main(int argc, char const *argv[]) {
   OSModel.parse(processThree);
   //OS.addProcess(parsedResult);
   //control(parsedResult, ramMem);
-
+  disk d = disk(4);
+  d.finishReading(0);
+  d.addCylinder(1,6,3);
+  d.diskPrint();
   while (getline(std::cin, input)) {
     std::cout << "input:" << input << "end" << std::endl;
     if(input.size() > 0){
