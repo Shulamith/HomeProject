@@ -7,7 +7,7 @@ void disk::setup(int numOfDisks) {
     disk_queue.push_back(std::queue<std::pair<int, int>>());
   }
 }
-disk::disk(){}
+disk::disk() {}
 
 void disk::finishReading(int diskNumber) {
   if (!disk_queue[diskNumber].empty()) {
@@ -22,10 +22,11 @@ void disk::addCylinder(int diskNumber, int pID, int cylinder) {
 void disk::diskPrint() {
   for (size_t i = 0; i < disk_queue.size(); i++) {
     if (!disk_queue[i].empty()) {
-      std::queue<std::pair<int,int>> copy = disk_queue[i];
+      std::queue<std::pair<int, int>> copy = disk_queue[i];
       std::set<int> processes;
 
-      std::cout << "Disk " << i << " reading cylinder: " << disk_queue[i].front().first << "\n";
+      std::cout << "Disk " << i
+                << " reading cylinder: " << disk_queue[i].front().first << "\n";
 
       // Add all the processes it is currently serving to set
       while (!copy.empty()) {
@@ -34,10 +35,11 @@ void disk::diskPrint() {
       }
 
       std::cout << "Curretly Serving: ";
-      for (std::set<int>::iterator it = processes.begin(); it != processes.end(); ++it) {
+      for (std::set<int>::iterator it = processes.begin();
+           it != processes.end(); ++it) {
         std::cout << " P" << *it;
       }
     }
   }
-  std::cout  << '\n';
+  std::cout << '\n';
 }

@@ -23,31 +23,34 @@ void OS::sendProcesstoCPU() {
 }
 void OS::terminate() {
   cpu_in_use = false;
-  process_in_cpu = -1;
   // removes process from pcb
   pcb.erase(process_in_cpu);
+  // tells memory to free up space
+  ram_mem.removeProcess(process_in_cpu);
+  process_in_cpu = -1;
   sendProcesstoCPU();
 }
 void OS::addProcess(int prioritySize, long long memoryNeeded) {
   std::pair<long long, long long> memoryAddress =
-      ram_mem.getMemory(memoryNeeded);
-  // if (memoryAddress.first == -1) {
-  //   std::cout << "Not enough memory" << '\n';
-  // } else {
-  Process p = Process(prioritySize, p_id_counter);
-  p.setMemory(memoryAddress);
-  if (!cpu_in_use) {
-    p.running = true;
-    process_in_cpu = p_id_counter;
-    setCPU();
+      ram_mem.getMemory(p_id_counter, memoryNeeded);
+  if (memoryAddress.first == -1) {
+    std::cout << "Could not find memory, process not added" << '\n';
   } else {
-    rq.addProcess(p);
+    Process p = Process(prioritySize, p_id_counter);
+    p.setMemory(memoryAddress);
+    if (!cpu_in_use) {
+      p.running = true;
+      process_in_cpu = p_id_counter;
+      process_in_cpu_memory = memoryAddress;
+      setCPU();
+    } else {
+      rq.addProcess(p);
+    }
+    // add process to PCB
+    pcb[p_id_counter] = p.running;
+    // increase processIDCounter
+    increasePID();
   }
-  // add process to PCB
-  pcb[p_id_counter] = p.running;
-  // increase processIDCounter
-  increasePID();
-  //  }
 }
 void OS::showProcesses() {
   if (cpu_in_use == true) {
@@ -63,7 +66,7 @@ void OS::parse(std::vector<std::string> unparsed) {
       std::cout << "Unrecognizable input" << '\n';
       return;
     }
-    addProcess(stoi(unparsed[1]), stoll(unparsed[2]));
+    addProcess(stoi(unparsed[1]), std::stoll(unparsed[2]));
   } else if (unparsed[0] == "t") {
     terminate();
   } else if (unparsed[0] == "S") {
@@ -72,26 +75,23 @@ void OS::parse(std::vector<std::string> unparsed) {
     } else if (unparsed[1] == "r") {
       showProcesses();
     } else if (unparsed[1] == "m") {
-      std::cout << "Show memory" << '\n';
+      ram_mem.memoryPrint();
     } else if (unparsed[1] == "i") {
       disk_control.diskPrint();
     } else {
       std::cout << "Unrecognizable Input" << '\n';
     }
-  }
-  else if (unparsed[0]=="D" && unparsed.size()==2) {
+  } else if (unparsed[0] == "D" && unparsed.size() == 2) {
     disk_control.finishReading(stoi(unparsed[1]));
-  }
-  else if (unparsed[0]=="d" && unparsed.size()>2) {
-    if(cpu_in_use){
-    int diskNumber = stoi(unparsed[1]);
+  } else if (unparsed[0] == "d" && unparsed.size() > 2) {
+    if (cpu_in_use) {
+      int diskNumber = stoi(unparsed[1]);
 
-    for(int i=2; i<unparsed.size(); i++){
-      disk_control.addCylinder(diskNumber,process_in_cpu,stoi(unparsed[i]));
+      for (int i = 2; i < unparsed.size(); i++) {
+        disk_control.addCylinder(diskNumber, process_in_cpu, stoi(unparsed[i]));
+      }
     }
-  }
-  }else {
+  } else {
     std::cout << "Unrecognizable Input" << '\n';
   }
-
 }
